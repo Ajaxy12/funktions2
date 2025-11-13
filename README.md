@@ -72,6 +72,38 @@ gh repo create repo-name --public --source=. --remote=origin --push
 
 **Note:** If using Option 2, you must initialize git, add files, and commit BEFORE running this command. Then skip to Step 6 (Push).
 
+**⚠️ Important: Main vs Master Branch**
+
+GitHub now uses `main` as the default branch name (changed from `master` in 2020). When creating a repository:
+
+- **GitHub CLI** creates repositories with `main` as default branch
+- **GitHub Web Interface** creates repositories with `main` as default branch
+- **Local Git** may still use `master` as default (depending on your Git version)
+
+**If your local branch is `master` and GitHub uses `main`:**
+```bash
+# After git init, check your branch name
+git branch
+
+# If it shows "master", rename it to "main" before pushing
+git branch -M main
+
+# Then push
+git push -u origin main
+```
+
+**If your local branch is already `main`:**
+```bash
+# Just push directly
+git push -u origin main
+```
+
+**To check what branch GitHub created:**
+```bash
+# After creating repo, check remote branches
+git ls-remote --heads origin
+```
+
 ##### Option B: Using GitHub Web Interface - Recommended for Beginners
 
 **Step 0b.1: Go to GitHub.com**
@@ -89,6 +121,7 @@ gh repo create repo-name --public --source=. --remote=origin --push
 
 **Step 0b.3: Copy the repository URL**
 - GitHub will show you the URL (e.g., `https://github.com/username/repo-name.git`)
+- **Note:** GitHub creates the repository with `main` as the default branch name
 
 ---
 
@@ -168,25 +201,54 @@ git remote -v
 ```
 
 #### Step 5: Rename branch to main (if needed)
-```bash
-git branch -M main
-```
-**What does `-M` mean?**
-- `-M` stands for **"move/rename"** - it renames your current branch
-- If your branch is named `master`, this renames it to `main`
-- If `main` branch already exists, `-M` will force rename it
-- This is useful because GitHub now uses `main` as the default branch name
 
-**Check current branch name:**
+**Why this step is important:**
+- GitHub uses `main` as the default branch name (since 2020)
+- Older Git installations may create `master` branch locally
+- You need to match your local branch name with GitHub's branch name
+
+**Check your current branch name:**
 ```bash
 git branch
 ```
 
+**If your branch is named `master`, rename it to `main`:**
+```bash
+git branch -M main
+```
+
+**What does `-M` mean?**
+- `-M` stands for **"move/rename"** - it renames your current branch
+- If your branch is named `master`, this renames it to `main`
+- If `main` branch already exists, `-M` will force rename it
+- This ensures your local branch matches GitHub's default branch name
+
+**If your branch is already named `main`:**
+- You can skip this step
+- Or run `git branch -M main` anyway (it won't cause issues)
+
+**Verify the branch name:**
+```bash
+git branch
+# Should show: * main
+```
+
 #### Step 6: Push to GitHub
+
+**If you renamed to `main` (recommended):**
 ```bash
 git push -u origin main
 ```
-(Use `master` instead of `main` if that's your default branch name)
+
+**If your branch is still named `master` (not recommended):**
+```bash
+git push -u origin master
+```
+⚠️ **Note:** GitHub uses `main` by default. If you push `master`, you'll have two branches. It's better to rename to `main` first.
+
+**Check what branch GitHub expects:**
+- After creating repo on GitHub, it will show: "push an existing repository from the command line"
+- The command will show either `main` or `master` - use that branch name
 
 **What does `-u` mean?**
 - `-u` stands for **"upstream"** - it sets up tracking between your local branch and the remote branch
