@@ -80,7 +80,20 @@ GitHub now uses `main` as the default branch name (changed from `master` in 2020
 - **GitHub Web Interface** creates repositories with `main` as default branch
 - **Local Git** may still use `master` as default (depending on your Git version)
 
-**If your local branch is `master` and GitHub uses `main`:**
+**When to use `main` (Recommended):**
+- ✅ New repositories (created after 2020)
+- ✅ Most modern projects
+- ✅ GitHub's default standard
+- ✅ Better for collaboration (most developers expect `main`)
+- ✅ Industry standard now
+
+**When to use `master`:**
+- ⚠️ Legacy repositories (created before 2020)
+- ⚠️ Working with old projects that still use `master`
+- ⚠️ Team/organization still uses `master` convention
+- ⚠️ Older Git installations that default to `master`
+
+**Scenario 1: Local branch is `master`, GitHub uses `main` (Most Common)**
 ```bash
 # After git init, check your branch name
 git branch
@@ -92,17 +105,43 @@ git branch -M main
 git push -u origin main
 ```
 
-**If your local branch is already `main`:**
+**Scenario 2: Local branch is already `main` (Ideal)**
 ```bash
-# Just push directly
+# Just push directly - branch names match!
 git push -u origin main
 ```
+
+**Scenario 3: Local branch is `main`, but GitHub repository uses `master` (Rare)**
+```bash
+# Check what branch GitHub created
+git ls-remote --heads origin
+
+# If GitHub shows "master", rename your local branch to match
+git branch -M master
+
+# Then push
+git push -u origin master
+```
+
+**Or, better option: Change GitHub's default branch to `main`:**
+1. Go to repository Settings → Branches
+2. Change default branch from `master` to `main`
+3. Then use `main` locally and push: `git push -u origin main`
 
 **To check what branch GitHub created:**
 ```bash
 # After creating repo, check remote branches
 git ls-remote --heads origin
+
+# Or check via GitHub CLI
+gh repo view username/repo-name --json defaultBranchRef
 ```
+
+**Quick Decision Guide:**
+- **New project?** → Use `main` (rename local `master` to `main` if needed)
+- **Old project with `master`?** → Can keep `master` or migrate to `main`
+- **Team uses `master`?** → Follow team convention
+- **Unsure?** → Use `main` (it's the modern standard)
 
 ##### Option B: Using GitHub Web Interface - Recommended for Beginners
 
@@ -200,55 +239,101 @@ git remote set-url origin https://github.com/username/repo-name.git
 git remote -v
 ```
 
-#### Step 5: Rename branch to main (if needed)
+#### Step 5: Rename branch to match GitHub (if needed)
 
 **Why this step is important:**
 - GitHub uses `main` as the default branch name (since 2020)
 - Older Git installations may create `master` branch locally
 - You need to match your local branch name with GitHub's branch name
+- Mismatched branch names can cause confusion and errors
 
 **Check your current branch name:**
 ```bash
 git branch
 ```
 
-**If your branch is named `master`, rename it to `main`:**
+**Check what branch GitHub expects:**
 ```bash
+git ls-remote --heads origin
+```
+
+**Scenario A: Local is `master`, GitHub uses `main` (Most Common)**
+```bash
+# Rename local branch from master to main
 git branch -M main
+```
+
+**Scenario B: Local is already `main` (Ideal - No action needed)**
+```bash
+# Branch names already match, skip this step
+# Or verify: git branch (should show: * main)
+```
+
+**Scenario C: Local is `main`, but GitHub uses `master` (Rare)**
+```bash
+# Only if GitHub repository was created before 2020 or uses master
+# Rename local branch from main to master
+git branch -M master
 ```
 
 **What does `-M` mean?**
 - `-M` stands for **"move/rename"** - it renames your current branch
-- If your branch is named `master`, this renames it to `main`
-- If `main` branch already exists, `-M` will force rename it
-- This ensures your local branch matches GitHub's default branch name
-
-**If your branch is already named `main`:**
-- You can skip this step
-- Or run `git branch -M main` anyway (it won't cause issues)
+- If your branch is named `master`, this renames it to `main` (or vice versa)
+- If target branch already exists, `-M` will force rename it
+- This ensures your local branch matches GitHub's branch name
 
 **Verify the branch name:**
 ```bash
 git branch
-# Should show: * main
+# Should show: * main (or * master if that's what GitHub uses)
 ```
+
+**Recommendation:** Use `main` unless working with a legacy repository that requires `master`.
 
 #### Step 6: Push to GitHub
 
-**If you renamed to `main` (recommended):**
+**Before pushing, verify branch names match:**
+```bash
+# Check local branch
+git branch
+
+# Check what GitHub expects
+git ls-remote --heads origin
+```
+
+**Push based on your scenario:**
+
+**Scenario A: Both local and GitHub use `main` (Recommended)**
 ```bash
 git push -u origin main
 ```
 
-**If your branch is still named `master` (not recommended):**
+**Scenario B: Both local and GitHub use `master` (Legacy)**
 ```bash
 git push -u origin master
 ```
-⚠️ **Note:** GitHub uses `main` by default. If you push `master`, you'll have two branches. It's better to rename to `main` first.
+
+**Scenario C: Mismatched branches (Fix this first!)**
+```bash
+# If local is master but GitHub is main:
+git branch -M main
+git push -u origin main
+
+# If local is main but GitHub is master:
+git branch -M master
+git push -u origin master
+```
+
+⚠️ **Important Notes:**
+- **Always match branch names** - Local and GitHub should use the same branch name
+- **GitHub defaults to `main`** - New repositories use `main` by default
+- **If you push mismatched names**, you'll create two separate branches (confusing!)
+- **Best practice:** Use `main` for new projects, `master` only for legacy projects
 
 **Check what branch GitHub expects:**
 - After creating repo on GitHub, it will show: "push an existing repository from the command line"
 - The command will show either `main` or `master` - use that branch name
+- Or use: `git ls-remote --heads origin` to check
 
 **What does `-u` mean?**
 - `-u` stands for **"upstream"** - it sets up tracking between your local branch and the remote branch
@@ -1084,3 +1169,4 @@ git ls-remote --heads origin
 
 **Last Updated:** 2025  
 **Repository:** https://github.com/Ajaxy12/funktions2
+
