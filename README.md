@@ -881,6 +881,28 @@ This command:
 ```bash
 gh repo list
 ```
+Shows all your repositories with:
+- Repository name
+- Visibility (public/private)
+- Last updated date
+- Description (if available)
+
+**List repositories with more details:**
+```bash
+gh repo list --limit 10    # Show first 10 repositories
+gh repo list --json name,url,description  # Show as JSON
+```
+
+**List repositories by language:**
+```bash
+gh repo list --language JavaScript
+```
+
+**List repositories by visibility:**
+```bash
+gh repo list --public      # Only public repositories
+gh repo list --private     # Only private repositories
+```
 
 #### View repository details
 ```bash
@@ -969,6 +991,32 @@ gh repo delete user/repo # Delete repository (⚠️ dangerous)
 gh --version            # Check CLI version
 gh --help               # Show help
 ```
+
+---
+
+## 📚 My Repositories
+
+### How to List Your Repositories
+
+**Using GitHub CLI:**
+```bash
+gh repo list
+```
+
+**Using Git command:**
+```bash
+git ls-remote --heads origin
+```
+
+**View on GitHub:**
+- Visit: https://github.com/Ajaxy12?tab=repositories
+- Or visit your profile and click "Repositories" tab
+
+### My GitHub Repositories
+
+- **[funktions2](https://github.com/Ajaxy12/funktions2)** - Git Commands Guide & Hello World application
+- **[Pseudokod](https://github.com/Ajaxy12/Pseudokod)** - JavaScript Study Guide & Practical Examples
+- **[create-react-app-auth-amplify](https://github.com/Ajaxy12/create-react-app-auth-amplify)** - React app with AWS Amplify authentication (Forked)
 
 ---
 
