@@ -7,12 +7,92 @@ This guide covers three main scenarios for working with Git repositories.
 2. [Updating an Existing Repository](#2-updating-an-existing-repository)
 3. [Removing All Diffs and Creating Clean Initial Commit](#3-removing-all-diffs-and-creating-clean-initial-commit)
 4. [Checking Status Commands](#4-checking-status-commands)
+5. [GitHub CLI Commands](#5-github-cli-commands)
 
 ---
 
 ## 1. Building a New Repository
 
 ### Scenario: You don't have a repository yet and want to create one
+
+**⚠️ IMPORTANT: Create the GitHub repository FIRST before working with Git commands!**
+
+#### Step 0: Create repository on GitHub
+
+**You have TWO options to create the repository:**
+
+##### Option A: Using GitHub CLI (Command Line) - Recommended for Terminal Users
+
+**Step 0a.1: Check if GitHub CLI is installed**
+```bash
+gh --version
+```
+If not installed, download from: https://cli.github.com/
+
+**Step 0a.2: Check authentication status**
+```bash
+gh auth status
+```
+
+**Step 0a.3: Authenticate with GitHub (if not logged in)**
+```bash
+gh auth login
+```
+Follow the prompts:
+- Select "GitHub.com"
+- Choose "Login with a web browser"
+- Copy the one-time code shown
+- Press Enter to open browser
+- Paste code and authorize
+- Return to terminal
+
+**Alternative: Login with web browser directly**
+```bash
+gh auth login --web
+```
+Follow the prompts:
+- Select "HTTPS" as preferred protocol
+- Choose "Yes" to authenticate Git with GitHub credentials
+- Copy the one-time code
+- Press Enter to open browser
+- Paste code and authorize
+
+**Step 0a.4: Create repository**
+
+**Option 1: Create repository only (then follow Steps 1-6 below)**
+```bash
+gh repo create repo-name --public
+```
+
+**Option 2: Create repository and push in one command (requires git init, add, commit done first)**
+```bash
+# Make sure you've done: git init, git add ., git commit -m "message" first!
+gh repo create repo-name --public --source=. --remote=origin --push
+```
+
+**Note:** If using Option 2, you must initialize git, add files, and commit BEFORE running this command. Then skip to Step 6 (Push).
+
+##### Option B: Using GitHub Web Interface - Recommended for Beginners
+
+**Step 0b.1: Go to GitHub.com**
+- Visit https://github.com/new
+- Or click the "+" icon in the top right, then "New repository"
+
+**Step 0b.2: Fill in repository details**
+- Repository name: `your-repo-name`
+- Choose Public or Private
+- **Important:** Do NOT check:
+  - ❌ "Add a README file" (if you already have one)
+  - ❌ "Add .gitignore" (if you already have one)
+  - ❌ "Choose a license" (unless you want one)
+- Click "Create repository"
+
+**Step 0b.3: Copy the repository URL**
+- GitHub will show you the URL (e.g., `https://github.com/username/repo-name.git`)
+
+---
+
+**Now that you have created the repository, follow these steps to set up your local project:**
 
 #### Step 1: Initialize local repository
 ```bash
@@ -70,13 +150,36 @@ git commit -m "Remove unused files"
 
 **Tip:** Write clear, descriptive commit messages that explain WHAT you changed and WHY (if needed).
 
-#### Step 4: Create repository on GitHub
-- Go to GitHub.com and create a new repository
-- Copy the repository URL (e.g., `https://github.com/username/repo-name.git`)
+#### Step 4: Connect local repository to GitHub
 
-#### Step 5: Connect local repository to GitHub
+**If you used Option A (CLI) and it didn't auto-add remote:**
 ```bash
 git remote add origin https://github.com/username/repo-name.git
+```
+
+**If remote already exists but URL is wrong:**
+```bash
+git remote set-url origin https://github.com/username/repo-name.git
+```
+
+**Check remote configuration:**
+```bash
+git remote -v
+```
+
+#### Step 5: Rename branch to main (if needed)
+```bash
+git branch -M main
+```
+**What does `-M` mean?**
+- `-M` stands for **"move/rename"** - it renames your current branch
+- If your branch is named `master`, this renames it to `main`
+- If `main` branch already exists, `-M` will force rename it
+- This is useful because GitHub now uses `main` as the default branch name
+
+**Check current branch name:**
+```bash
+git branch
 ```
 
 #### Step 6: Push to GitHub
@@ -677,6 +780,194 @@ git reset --hard HEAD~1
 ### If you need to restore a deleted file
 ```bash
 git checkout HEAD -- filename.js
+```
+
+---
+
+## 5. GitHub CLI Commands
+
+### What is GitHub CLI?
+
+GitHub CLI (`gh`) is a command-line tool that lets you work with GitHub directly from your terminal. It's a powerful alternative to using the GitHub web interface.
+
+### Installation
+
+**Check if GitHub CLI is installed:**
+```bash
+gh --version
+```
+
+**If not installed:**
+- Download from: https://cli.github.com/
+- Or use package manager:
+  - Windows: `winget install GitHub.cli`
+  - macOS: `brew install gh`
+  - Linux: See https://cli.github.com/manual/installation
+
+### Authentication Commands
+
+#### Check authentication status
+```bash
+gh auth status
+```
+Shows:
+- Whether you're logged in
+- Your GitHub username
+- Authentication token status
+
+#### Login to GitHub
+```bash
+gh auth login
+```
+Interactive login process:
+1. Select "GitHub.com" or "Other"
+2. Choose authentication method:
+   - "Login with a web browser" (recommended)
+   - "Paste an authentication token"
+3. Follow the prompts to complete authentication
+
+#### Login with web browser (direct)
+```bash
+gh auth login --web
+```
+Simplified web-based login:
+1. Select "HTTPS" as preferred protocol
+2. Choose "Yes" to authenticate Git with GitHub credentials
+3. Copy the one-time code shown
+4. Press Enter to open browser
+5. Paste code and authorize
+
+#### Logout from GitHub
+```bash
+gh auth logout
+```
+
+#### Refresh authentication token
+```bash
+gh auth refresh
+```
+
+### Repository Commands
+
+#### Create a new repository
+```bash
+gh repo create repo-name --public
+```
+Creates a public repository
+
+```bash
+gh repo create repo-name --private
+```
+Creates a private repository
+
+#### Create repository and push in one command
+```bash
+gh repo create repo-name --public --source=. --remote=origin --push
+```
+This command:
+- Creates the repository on GitHub
+- Sets the current directory as source
+- Adds remote named "origin"
+- Pushes all commits to GitHub
+
+**Options:**
+- `--public` - Make repository public
+- `--private` - Make repository private
+- `--source=.` - Use current directory as source
+- `--remote=origin` - Set remote name to "origin"
+- `--push` - Push commits after creating
+
+#### List your repositories
+```bash
+gh repo list
+```
+
+#### View repository details
+```bash
+gh repo view username/repo-name
+```
+
+#### Clone a repository
+```bash
+gh repo clone username/repo-name
+```
+
+#### Fork a repository
+```bash
+gh repo fork username/repo-name
+```
+
+#### Delete a repository
+```bash
+gh repo delete username/repo-name
+```
+⚠️ **Warning:** This permanently deletes the repository!
+
+### Common GitHub CLI Workflows
+
+#### Complete workflow: Create and push repository
+```bash
+# 1. Check if CLI is installed
+gh --version
+
+# 2. Check authentication
+gh auth status
+
+# 3. Login if needed
+gh auth login --web
+
+# 4. Initialize git (if not done)
+git init
+git add .
+git commit -m "Initial commit"
+
+# 5. Create repository and push
+gh repo create my-repo --public --source=. --remote=origin --push
+```
+
+#### Update remote URL after CLI creation
+```bash
+# If remote wasn't added automatically
+git remote set-url origin https://github.com/username/repo-name.git
+
+# Verify remote
+git remote -v
+```
+
+### GitHub CLI vs Web Interface
+
+| Feature | GitHub CLI | Web Interface |
+|---------|------------|---------------|
+| **Speed** | ⚡ Faster (no browser needed) | 🐌 Slower (requires browser) |
+| **Automation** | ✅ Easy to script | ❌ Manual only |
+| **Learning Curve** | ⚠️ Requires terminal knowledge | ✅ Beginner-friendly |
+| **Repository Creation** | ✅ One command | ⚠️ Multiple clicks |
+| **Best For** | Terminal users, automation | Beginners, visual learners |
+
+**Recommendation:**
+- **Use CLI** if you're comfortable with terminal commands
+- **Use Web Interface** if you're just starting with Git/GitHub
+
+### Quick Reference: GitHub CLI Commands
+
+```bash
+# Authentication
+gh auth status          # Check login status
+gh auth login           # Login to GitHub
+gh auth login --web     # Login via web browser
+gh auth logout          # Logout from GitHub
+
+# Repositories
+gh repo create name --public --source=. --push    # Create and push
+gh repo list            # List your repositories
+gh repo view user/repo  # View repository details
+gh repo clone user/repo # Clone a repository
+gh repo fork user/repo  # Fork a repository
+gh repo delete user/repo # Delete repository (⚠️ dangerous)
+
+# General
+gh --version            # Check CLI version
+gh --help               # Show help
 ```
 
 ---
